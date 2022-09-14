@@ -9,10 +9,8 @@ import (
 	"os/signal"
 	"time"
 	"vehicle-tax/api"
-	config2 "vehicle-tax/config"
-	"vehicle-tax/middleware"
 	"vehicle-tax/repository"
-	"vehicle-tax/services"
+	service "vehicle-tax/services"
 
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
@@ -28,42 +26,33 @@ func main() {
 		Database:         os.Getenv("DB_NAME"),
 	}
 	port := os.Getenv("API_PORT")
-	token := os.Getenv("TOKEN")
-	dKey := os.Getenv("DECRYPTION_KEY")
-	downstreamUrl := os.Getenv("DOWNSTREAM_URL")
-	downstreamAPIKey := os.Getenv("DOWNSTREAM_API_KEY")
 	//INITIALIZE HANDLERS FOR DEPENDENCY INJECTION //
 	//Order of initialization matters
-	logger := log.New(os.Stdout, "Template Service: ", log.LstdFlags)
+	logger := log.New(os.Stdout, "Import Duty Service: ", log.LstdFlags)
 	//Setup database and repository
-	db := repository.NewMongoDB(&dbConfig, logger)
-	repo, _ := db.ConnectMongoDB()
-	config := config2.LoadConfig(&config2.Config{
-		Token:            &token,
-		DecryptionKey:    &dKey,
-		DownstreamUrl:    &downstreamUrl,
-		DownstreamAPIKey: &downstreamAPIKey,
-	})
-	dr := repository.NewDataRepo(&repository.DataRepository{Logger: logger, Repo: repo})
-	sd := services.NewSampleDownstreamService(&services.SampleDownstreamService{Logger: logger, Config: &config})
-	li := api.NewTemplate(logger, &dr, &config, &sd)
-	hb := api.NewHeartbeat(logger)
+	db := repository.NewPostgresDB(&dbConfig, logger)
+	repo, _ := db.ConnectPostgresDB()
 
-	//Middleware
-	mw := middleware.GzipMiddleware{}
+	taxRepo := repository.NewTaxRepo(logger, repo)
+
+	taxService := service.NewTaxService(logger, taxRepo)
+
+	vc := api.NewVehicleController(logger, &taxService)
+	hb := api.NewHeartbeat(logger)
 
 	sm := mux.NewRouter()
 	getRouter := sm.Methods(http.MethodGet).Subrouter()
-
-	//Use this router for Gzip compressed request
-	getRouterGzip := sm.Methods(http.MethodGet).Subrouter()
-	getRouterGzip.Use(mw.GzipMiddleware)
+	postRouter := sm.Methods(http.MethodPost).Subrouter()
 
 	// HANDLE ROUTES
-	getRouter.HandleFunc("/{heartbeat|healthcheck}", hb.Heartbeat)
-	getRouter.HandleFunc("/", li.TemplateMethod)
-	//Use this route handle for gzip request
-	//getRouterGzip.HandleFunc("/", li.TemplateMethod)
+	getRouter.HandleFunc("/heartbeat", hb.Heartbeat)
+	getRouter.HandleFunc("/VehicleCategories", vc.ListCategories)
+	getRouter.HandleFunc("/VehicleTypes", vc.ListTypes)
+	getRouter.HandleFunc("/TaxInformation", vc.ListTax)
+
+	getRouter.HandleFunc("/VehicleType/{vehicleTypeId}/Duty", vc.CalculateDuty)
+
+	postRouter.HandleFunc("/TaxInformation/SearchSort", vc.ListTaxSearchAndSort)
 
 	//todo: Fetch from configuration file (MAY NOT BE NECESSARY)
 	server := &http.Server{

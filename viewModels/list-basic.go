@@ -1,8 +1,6 @@
 package viewModels
 
 import (
-	"vehicle-tax/interfaces"
-
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -17,7 +15,7 @@ type ListBasic struct {
 func NewListBasic(endingBefore *int64,
 	startingAfter *int64,
 	limit int64,
-	vehicleCategoryId *int64) interfaces.ServiceValidation {
+	vehicleCategoryId *int64) *ListBasic {
 
 	valid := (&ListBasic{
 		endingBefore,

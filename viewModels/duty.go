@@ -1,8 +1,6 @@
 package viewModels
 
 import (
-	"vehicle-tax/interfaces"
-
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -12,9 +10,9 @@ type CalculateDuty struct {
 	Validation        error
 }
 
-func NewCalculateDuty(endingBefore *int64,
+func NewCalculateDuty(
 	VehicleTypeId int64,
-	CostImportFreight float64) interfaces.ServiceValidation {
+	CostImportFreight float64) *CalculateDuty {
 
 	valid := (&CalculateDuty{
 		VehicleTypeId,

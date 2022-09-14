@@ -2,7 +2,6 @@ package viewModels
 
 import (
 	"math"
-	"vehicle-tax/interfaces"
 	"vehicle-tax/models"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -21,7 +20,7 @@ func NewBasicSearchSort(searchBy map[string]any,
 	sortKey string,
 	sortOrder models.SortOrder,
 	page int32,
-	perPage int32) interfaces.ServiceValidation {
+	perPage int32) *BasicSearchSort {
 
 	valid := (&BasicSearchSort{
 		searchBy,

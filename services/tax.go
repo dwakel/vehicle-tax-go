@@ -13,7 +13,7 @@ type TaxService struct {
 	taxRepo repository.IVehicleRepository
 }
 
-func NewTaxRepo(logger *log.Logger, taxRepo repository.IVehicleRepository) IVehicleService {
+func NewTaxService(logger *log.Logger, taxRepo repository.IVehicleRepository) IVehicleService {
 	return &TaxService{logger, taxRepo}
 }
 
