@@ -1,0 +1,11 @@
+.idea/
+.idea/workspace.xml
+play.go
+.vscode
+manifests/deployment-test.yml
+config/config.yaml
+config/env.sh
+config/downstream-services.yaml
+env.json
+test.json
+config.env

@@ -1,0 +1,30 @@
+basePath: /
+consumes:
+- application/json
+host: localhost
+info:
+  description: |-
+    the purpose of this application is to provide a template API
+
+    This should demonstrate all the possible comment annotations
+    that are available to turn go code into a fully compliant swagger 2.0 spec
+  termsOfService: terms of servide
+  title: Microservice API.
+  version: 0.0.1
+paths:
+  /:
+    get:
+      description: Gets Health Status of API
+      operationId: apiHealth
+      responses:
+        "200":
+          description: ""
+      tags:
+      - heartbeat
+produces:
+- application/json
+schemes:
+- http
+security:
+- api_key: []
+swagger: "2.0"
