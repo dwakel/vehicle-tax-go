@@ -9,6 +9,7 @@ import (
 	"os/signal"
 	"time"
 	"vehicle-tax/api"
+	v "vehicle-tax/migrator"
 	"vehicle-tax/repository"
 	service "vehicle-tax/services"
 
@@ -17,7 +18,7 @@ import (
 )
 
 func main() {
-	godotenv.Load("./config.env")
+	godotenv.Load("./.env")
 	// GET ENV VARIABLES //
 	dbConfig := repository.Config{
 		ConnectionString: os.Getenv("DB_CONNECTIONSTRING"),
@@ -33,8 +34,15 @@ func main() {
 	db := repository.NewPostgresDB(&dbConfig, logger)
 	repo, _ := db.ConnectPostgresDB()
 
-	taxRepo := repository.NewTaxRepo(logger, repo)
+	//Run Migrations here on startup
+	migrate := v.New(repo, "")
+	migErr := migrate.Up()
+	if migErr != nil {
+		logger.Println("Migration failed")
+		logger.Println(migErr)
+	}
 
+	taxRepo := repository.NewTaxRepo(logger, repo)
 	taxService := service.NewTaxService(logger, taxRepo)
 
 	vc := api.NewVehicleController(logger, &taxService)
