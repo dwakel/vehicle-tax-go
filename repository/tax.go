@@ -182,19 +182,19 @@ func (this *TaxRepository) ListVehicleTaxSearchAndSort(searchBy map[string]any, 
 	case "nhil":
 		sort = fmt.Sprintf("a.nhil %v", sortOrder.String())
 	case "getfundlevy":
-		sort = fmt.Sprintf("a.getfundlevy %v", sortOrder.String())
+		sort = fmt.Sprintf("a.getfund_levy %v", sortOrder.String())
 	case "aulevy":
-		sort = fmt.Sprintf("a.aulevy %v", sortOrder.String())
+		sort = fmt.Sprintf("a.au_levy %v", sortOrder.String())
 	case "ecowaslevy":
-		sort = fmt.Sprintf("a.ecowaslevy %v", sortOrder.String())
+		sort = fmt.Sprintf("a.ecowas_levy %v", sortOrder.String())
 	case "eximlevy":
-		sort = fmt.Sprintf("a.eximlevy %v", sortOrder.String())
+		sort = fmt.Sprintf("a.exim_levy %v", sortOrder.String())
 	case "examlevy":
-		sort = fmt.Sprintf("a.examlevy %v", sortOrder.String())
+		sort = fmt.Sprintf("a.exam_levy %v", sortOrder.String())
 	case "processingfee":
-		sort = fmt.Sprintf("a.processingfee %v", sortOrder.String())
+		sort = fmt.Sprintf("a.processing_fee %v", sortOrder.String())
 	case "specialimportlevy":
-		sort = fmt.Sprintf("a.specialimportlevy %v", sortOrder.String())
+		sort = fmt.Sprintf("a.special_import_levy %v", sortOrder.String())
 	default:
 		sort = fmt.Sprintf("a.vehicle_type_id %v", sortOrder.String())
 	}

@@ -34,12 +34,16 @@ func main() {
 	db := repository.NewPostgresDB(&dbConfig, logger)
 	repo, _ := db.ConnectPostgresDB()
 
-	//Run Migrations here on startup
-	migrate := v.New(repo, "")
-	migErr := migrate.Up()
-	if migErr != nil {
-		logger.Println("Migration failed")
-		logger.Println(migErr)
+	//Run Migrations here on startup if migrate arg is passed
+	runMigrations := os.Args[0]
+	if runMigrations == "migrate" {
+		fmt.Println("-----------Running Migrations--------------")
+		migrate := v.New(repo, "")
+		migErr := migrate.Up()
+		if migErr != nil {
+			logger.Println("Migration failed")
+			logger.Println(migErr)
+		}
 	}
 
 	taxRepo := repository.NewTaxRepo(logger, repo)
