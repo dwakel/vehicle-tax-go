@@ -35,7 +35,8 @@ func main() {
 	repo, _ := db.ConnectPostgresDB()
 
 	//Run Migrations here on startup if migrate arg is passed
-	runMigrations := os.Args[0]
+	runMigrations := os.Args[1]
+	fmt.Println("Args:", runMigrations)
 	if runMigrations == "migrate" {
 		fmt.Println("-----------Running Migrations--------------")
 		migrate := v.New(repo, "")

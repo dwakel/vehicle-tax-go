@@ -62,27 +62,9 @@ sortBy {"importDuty": "asc"}  (either "asc",ascending or "desc", descending)
 
 
 #### Relevant commands (must cd into project directory)
-Run Migrations
+Run Migrations run the following on first application startup
 ``` Bash
-sh scripts/migrate.sh apply
-
-```
-
-RoleBack Migrations
-``` Bash
-sh scripts/migrate.sh rollback
-
-```
-
-Destroy Database
-``` Bash
-sh scripts/destroy.sh
-
-```
-
-Start Database
-``` Bash
-sh scripts/start.sh
+go run main.go migrate
 
 ```
 
@@ -92,6 +74,6 @@ sh scripts/start.sh
 
 
 #### Point to note
-Make sure application are run in the specified ports in the launch.json file
+Make sure application are run in the specified ports in the .env file
 - To build Main App from doccker compose, uncomment configurations in docker-compose.yml file
 
