@@ -29,7 +29,7 @@ func NewCalculateDuty(
 }
 
 func (v *CalculateDuty) Validator() error {
-	return validation.ValidateStruct(&v,
-		validation.Field(&v.CostImportFreight, validation.Min(0)),
+	return validation.ValidateStruct(v,
+		validation.Field(&v.CostImportFreight, validation.Min(0.0)),
 		validation.Field(&v.VehicleTypeId, validation.Min(1)))
 }

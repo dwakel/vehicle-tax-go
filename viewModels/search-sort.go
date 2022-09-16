@@ -29,7 +29,7 @@ func NewBasicSearchSort(searchBy map[string]any,
 		page,
 		perPage,
 		nil,
-	}).Validator()
+	})
 
 	return &BasicSearchSort{
 		searchBy,
@@ -37,15 +37,15 @@ func NewBasicSearchSort(searchBy map[string]any,
 		sortOrder,
 		page,
 		perPage,
-		valid,
+		(*valid).Validator(),
 	}
 
 }
 
 func (v *BasicSearchSort) Validator() error {
-	err := validation.ValidateStruct(&v,
+	err := validation.ValidateStruct(v,
 		validation.Field(&v.PerPage, validation.Min(0), validation.Max(50)),
-		validation.Field(&v.Page, validation.Min(0), validation.Max(math.MaxInt64)),
+		validation.Field(&v.Page, validation.Min(1), validation.Max(math.MaxInt64)),
 	)
 	return err
 }

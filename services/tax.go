@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"vehicle-tax/models"
@@ -20,6 +21,7 @@ func NewTaxService(logger *log.Logger, taxRepo repository.IVehicleRepository) IV
 func (t *TaxService) ListVehicleCategory(query viewModels.ListBasic) ([]models.VehicleCategory, error) {
 	if query.Validation != nil {
 		fmt.Fprint(t.logger.Writer(), "Validation failed: ", query.Validation)
+		return nil, errors.New(fmt.Sprintf("Validation failed: ", query.Validation))
 	}
 
 	taxes, err := t.taxRepo.ListVehicleCategories(query.EndingBefore, query.StartingAfter, query.Limit)
@@ -35,9 +37,10 @@ func (t *TaxService) ListVehicleCategory(query viewModels.ListBasic) ([]models.V
 func (t *TaxService) ListVehicleType(query viewModels.ListBasic) ([]models.VehicleType, error) {
 	if query.Validation != nil {
 		fmt.Fprint(t.logger.Writer(), "Validation failed: ", query.Validation)
+		return nil, errors.New(fmt.Sprintf("Validation failed: ", query.Validation))
 	}
 
-	taxes, err := t.taxRepo.ListVehicleType(query.EndingBefore, query.StartingAfter, query.VehicleCategoryId, query.Limit)
+	taxes, err := t.taxRepo.ListVehicleType(query.VehicleCategoryId, query.EndingBefore, query.StartingAfter, query.Limit)
 
 	if err != nil {
 		return nil, err
@@ -50,6 +53,7 @@ func (t *TaxService) ListVehicleType(query viewModels.ListBasic) ([]models.Vehic
 func (t *TaxService) ListVehicleTax(query viewModels.ListBasic) ([]models.VehicleTax, error) {
 	if query.Validation != nil {
 		fmt.Fprint(t.logger.Writer(), "Validation failed: ", query.Validation)
+		return nil, errors.New(fmt.Sprintf("Validation failed: ", query.Validation))
 	}
 
 	taxes, err := t.taxRepo.ListVehicleTax(query.EndingBefore, query.StartingAfter, query.VehicleCategoryId, query.Limit)
@@ -65,10 +69,12 @@ func (t *TaxService) ListVehicleTax(query viewModels.ListBasic) ([]models.Vehicl
 func (t *TaxService) ListVehicleTaxSearchSort(query viewModels.BasicSearchSort) ([]models.VehicleTaxDto, error) {
 	if query.Validation != nil {
 		fmt.Fprint(t.logger.Writer(), "Validation failed: ", query.Validation)
+		return nil, errors.New(fmt.Sprintf("Validation failed: ", query.Validation.Error()))
 	}
+	fmt.Println(query.Validation)
 
 	duty, err := t.taxRepo.ListVehicleTaxSearchAndSort(query.SearchBy, query.SortKey, query.SortOrder)
-
+	fmt.Println(len(duty))
 	if err != nil {
 		return nil, err
 	}
@@ -81,12 +87,21 @@ func (t *TaxService) ListVehicleTaxSearchSort(query viewModels.BasicSearchSort) 
 	}
 
 	t.logger.Println("Vehicle Tax Listed Succesfully")
-	return duty[skip : skip+take], nil
+	endRange := skip + take
+	if skip+take >= int32(len(duty)) {
+		endRange = int32(len(duty))
+	}
+	if skip > int32(len(duty)) {
+		skip = int32(len(duty))
+	}
+	fmt.Println(skip, ":", endRange)
+	return duty[skip:endRange], nil
 }
 
 func (t *TaxService) CalculateDuty(query viewModels.CalculateDuty) (float64, error) {
 	if query.Validation != nil {
 		fmt.Fprint(t.logger.Writer(), "Validation failed: ", query.Validation)
+		return 0.0, errors.New(fmt.Sprintf("Validation failed: ", query.Validation))
 	}
 
 	taxInfo, err := (t.taxRepo.FetchVehicleTaxByTypeId(query.VehicleTypeId))

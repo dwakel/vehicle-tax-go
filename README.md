@@ -16,19 +16,15 @@ In a separate terminal window (2 terminals) RUN the following commads:
 
 #### Terminal
 ``` Bash
-cd vehicle-tax
-
-sh scripts/create.sh
+cd vehicle-tax-go
 
 ```
 Open Visual studio and run the project or run:
 
 ``` Bash
-dotnet run --project VehicleTracker/VehicleTracker.csproj
+go run main.go
 
 ```
-Create an account and link the account to your existing account tracker accounts
-
 
 #### How to Use Search And Sort on /api/Vehicle/TaxInformation/SearchSort
 
@@ -97,6 +93,5 @@ sh scripts/start.sh
 
 #### Point to note
 Make sure application are run in the specified ports in the launch.json file
-- The application should be run using kestrel
 - To build Main App from doccker compose, uncomment configurations in docker-compose.yml file
 

@@ -45,10 +45,12 @@ func (v *VehicleController) ListCategories(rw http.ResponseWriter, r *http.Reque
 
 	end, err := strconv.Atoi(r.URL.Query().Get("endingBefore"))
 	if err == nil {
+		endingBefore = new(int64)
 		*endingBefore = int64(end)
 	}
 	start, err := strconv.Atoi(r.URL.Query().Get("startingAfter"))
 	if err == nil {
+		startingAfter = new(int64)
 		*startingAfter = int64(start)
 	}
 	lim, err := strconv.Atoi(r.URL.Query().Get("limit"))
@@ -62,14 +64,14 @@ func (v *VehicleController) ListCategories(rw http.ResponseWriter, r *http.Reque
 		fmt.Fprint(rw, &errorResponse{Error: err})
 		return
 	}
-
-	rw.WriteHeader(http.StatusBadRequest)
-	fmt.Fprint(rw, &listResponse[models.VehicleCategory]{
+	resp, _ := json.Marshal(listResponse[models.VehicleCategory]{
 		Data:           res,
-		NextCursor:     nil,
-		PreviousCursor: nil,
+		NextCursor:     &res[len(res)-1].Id,
+		PreviousCursor: &res[0].Id,
 		TotalRecords:   int64(len(res)),
 	})
+	rw.WriteHeader(http.StatusOK)
+	rw.Write(resp)
 }
 
 func (v *VehicleController) ListTypes(rw http.ResponseWriter, r *http.Request) {
@@ -78,16 +80,21 @@ func (v *VehicleController) ListTypes(rw http.ResponseWriter, r *http.Request) {
 
 	end, err := strconv.Atoi(r.URL.Query().Get("endingBefore"))
 	if err == nil {
+		endingBefore = new(int64)
 		*endingBefore = int64(end)
 	}
 	start, err := strconv.Atoi(r.URL.Query().Get("startingAfter"))
 	if err == nil {
+		startingAfter = new(int64)
 		*startingAfter = int64(start)
 	}
 	cat, err := strconv.Atoi(r.URL.Query().Get("categoryId"))
+	fmt.Println("ITS HERE  ", cat)
 	if err == nil {
+		categoryId = new(int64)
 		*categoryId = int64(cat)
 	}
+
 	lim, err := strconv.Atoi(r.URL.Query().Get("limit"))
 	if err == nil {
 		limit = int64(lim)
@@ -100,13 +107,20 @@ func (v *VehicleController) ListTypes(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rw.WriteHeader(http.StatusBadRequest)
-	fmt.Fprint(rw, &listResponse[models.VehicleType]{
+	var nextCursor, previousCursor *int64
+	if len(res) <= 0 {
+		nextCursor, previousCursor = nil, nil
+	} else {
+		nextCursor, previousCursor = &res[len(res)-1].Id, &res[0].Id
+	}
+	resp, _ := json.Marshal(listResponse[models.VehicleType]{
 		Data:           res,
-		NextCursor:     nil,
-		PreviousCursor: nil,
+		NextCursor:     nextCursor,
+		PreviousCursor: previousCursor,
 		TotalRecords:   int64(len(res)),
 	})
+	rw.WriteHeader(http.StatusOK)
+	rw.Write(resp)
 }
 
 func (v *VehicleController) ListTax(rw http.ResponseWriter, r *http.Request) {
@@ -115,10 +129,12 @@ func (v *VehicleController) ListTax(rw http.ResponseWriter, r *http.Request) {
 
 	end, err := strconv.Atoi(r.URL.Query().Get("endingBefore"))
 	if err == nil {
+		endingBefore = new(int64)
 		*endingBefore = int64(end)
 	}
 	start, err := strconv.Atoi(r.URL.Query().Get("startingAfter"))
 	if err == nil {
+		startingAfter = new(int64)
 		*startingAfter = int64(start)
 	}
 	lim, err := strconv.Atoi(r.URL.Query().Get("limit"))
@@ -133,13 +149,20 @@ func (v *VehicleController) ListTax(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rw.WriteHeader(http.StatusBadRequest)
-	fmt.Fprint(rw, &listResponse[models.VehicleTax]{
+	var nextCursor, previousCursor *int64
+	if len(res) <= 0 {
+		nextCursor, previousCursor = nil, nil
+	} else {
+		nextCursor, previousCursor = &res[len(res)-1].Id, &res[0].Id
+	}
+	resp, _ := json.Marshal(listResponse[models.VehicleTax]{
 		Data:           res,
-		NextCursor:     nil,
-		PreviousCursor: nil,
+		NextCursor:     nextCursor,
+		PreviousCursor: previousCursor,
 		TotalRecords:   int64(len(res)),
 	})
+	rw.WriteHeader(http.StatusOK)
+	rw.Write(resp)
 
 }
 
@@ -159,13 +182,14 @@ func (v *VehicleController) ListTaxSearchAndSort(rw http.ResponseWriter, r *http
 		return
 	}
 
-	rw.WriteHeader(http.StatusBadRequest)
-	fmt.Fprint(rw, &listResponse[models.VehicleTaxDto]{
+	resp, _ := json.Marshal(listResponse[models.VehicleTaxDto]{
 		Data:           res,
 		NextCursor:     nil,
 		PreviousCursor: nil,
 		TotalRecords:   int64(len(res)),
 	})
+	rw.WriteHeader(http.StatusOK)
+	rw.Write(resp)
 
 }
 
@@ -188,7 +212,7 @@ func (v *VehicleController) CalculateDuty(rw http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	rw.WriteHeader(http.StatusBadRequest)
-	fmt.Fprint(rw, res)
+	rw.WriteHeader(http.StatusOK)
+	fmt.Fprintf(rw, "GHC%v", res)
 
 }

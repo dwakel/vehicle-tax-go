@@ -36,6 +36,6 @@ func NewListBasic(endingBefore *int64,
 }
 
 func (v *ListBasic) Validator() error {
-	return validation.ValidateStruct(&v,
-		validation.Field(&v.Limit, validation.Min(0)))
+	return validation.ValidateStruct(v,
+		validation.Field(&v.Limit, validation.Min(-1)))
 }

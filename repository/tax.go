@@ -30,7 +30,7 @@ func (this *TaxRepository) ListVehicleCategories(endingBefore *int64, startingAf
 					FIRST_VALUE(a.id) OVER(ORDER BY a.id DESC) ""next""
 					FROM public.vehicle_category a
 					WHERE a.id < @endingBefore
-					ORDER BY a.id desc ` + appendLimit(limit)
+					ORDER BY a.id desc ` + appendLimit(limit) + ";"
 	} else if startingAfter != nil {
 		query = `SELECT * FROM (
 						SELECT
@@ -39,14 +39,14 @@ func (this *TaxRepository) ListVehicleCategories(endingBefore *int64, startingAf
 						FIRST_VALUE(a.id) OVER(ORDER BY a.id DESC) ""next""
 					FROM public.vehicle_category a
 					WHERE a.id > @StartingAfter
-					ORDER BY a.id desc` + appendLimit(limit) + `) list ORDER BY id desc`
+					ORDER BY a.id desc` + appendLimit(limit) + `) list ORDER BY id desc;`
 	} else {
 		query = `SELECT
 					a.*,
 					LEAD(a.id) OVER(ORDER BY a.id DESC) prev,
-					null ""next""
+					null "next"
 					FROM public.vehicle_category a
-					ORDER BY a.id desc ` + appendLimit(limit)
+					ORDER BY a.id desc ` + appendLimit(limit) + ";"
 	}
 
 	err := this.repo.Raw(query, map[string]interface{}{"startingAfter": startingAfter, "endingBefore": endingBefore, "limit": limit}).Scan(&result).Error
@@ -61,17 +61,18 @@ func (this *TaxRepository) ListVehicleCategories(endingBefore *int64, startingAf
 }
 
 func (this *TaxRepository) ListVehicleType(vehicleCategoryId *int64, endingBefore *int64, startingAfter *int64, limit int64) ([]models.VehicleType, error) {
+
 	var query strings.Builder
 	var result []models.VehicleType
 	if endingBefore != nil {
 		query.WriteString(`SELECT
-							a.*,
+							a.id, a.vehicle_category_id, a.short_name, a.description,
 							LEAD(a.id) OVER(ORDER BY a.id DESC) prev,
 							FIRST_VALUE(a.id) OVER(ORDER BY a.id DESC) ""next""
 							FROM public.vehicle_type a
 							WHERE a.id < @endingBefore`)
 		if vehicleCategoryId != nil {
-			query.WriteString("AND a.id = @vehicleCategoryId")
+			query.WriteString(" AND a.vehicle_category_id = @vehicleCategoryId ")
 		}
 		query.WriteString(`ORDER BY a.id desc ` + appendLimit(limit))
 
@@ -80,23 +81,23 @@ func (this *TaxRepository) ListVehicleType(vehicleCategoryId *int64, endingBefor
 								SELECT
 								a.*,
 								LEAD(a.id) OVER(ORDER BY a.id DESC) prev,
-								FIRST_VALUE(a.id) OVER(ORDER BY a.id DESC) ""next""
+								FIRST_VALUE(a.id) OVER(ORDER BY a.id DESC) "next"
 							FROM public.vehicle_type a
-							WHERE a.id > @StartingAfter`)
+							WHERE a.id > @StartingAfter `)
 		if vehicleCategoryId != nil {
-			query.WriteString("AND a.id = @vehicleCategoryId")
+			query.WriteString("AND a.vehicle_category_id = @vehicleCategoryId ")
 		}
-		query.WriteString(`ORDER BY a.id desc` + appendLimit(limit) + `) list ORDER BY id desc`)
+		query.WriteString(`ORDER BY a.id desc ` + appendLimit(limit) + `) list ORDER BY id desc`)
 	} else {
 		query.WriteString(`SELECT
 							a.*,
 							LEAD(a.id) OVER(ORDER BY a.id DESC) prev,
-							null ""next""
-							FROM public.vehicle_type a`)
+							null "next"
+							FROM public.vehicle_type a `)
 		if vehicleCategoryId != nil {
-			query.WriteString("AND a.id = @vehicleCategoryId")
+			query.WriteString("WHERE a.vehicle_category_id = @vehicleCategoryId ")
 		}
-		query.WriteString(`ORDER BY a.id desc ` + appendLimit(limit))
+		query.WriteString(`ORDER BY a.id desc ` + appendLimit(limit) + ";")
 	}
 
 	err := this.repo.Raw(query.String(), map[string]interface{}{"vehicleCategoryId": vehicleCategoryId, "startingAfter": startingAfter, "endingBefore": endingBefore, "limit": limit}).Scan(&result).Error
@@ -117,14 +118,14 @@ func (this *TaxRepository) ListVehicleTax(vehicleCategoryId *int64, endingBefore
 		query.WriteString(`SELECT
 							a.*,
 							LEAD(a.id) OVER(ORDER BY a.id DESC) prev,
-							FIRST_VALUE(a.id) OVER(ORDER BY a.id DESC) ""next""
-							FROM public.vehicle_tax a`)
+							FIRST_VALUE(a.id) OVER(ORDER BY a.id DESC) "next"
+							FROM public.vehicle_tax a `)
 		if vehicleCategoryId != nil {
-			query.WriteString("LEFT JOIN public.vehicle_type b ON b.id = a.vehicle_type_id")
+			query.WriteString("LEFT JOIN public.vehicle_type b ON b.id = a.vehicle_type_id ")
 		}
-		query.WriteString(`WHERE a.id < @endingBefore`)
+		query.WriteString(`WHERE a.id < @endingBefore `)
 		if vehicleCategoryId != nil {
-			query.WriteString("AND b.vehicle_category_id = @vehicleCategoryId")
+			query.WriteString("AND b.vehicle_category_id = @vehicleCategoryId ")
 		}
 		query.WriteString(`ORDER BY a.id desc ` + appendLimit(limit))
 
@@ -133,27 +134,27 @@ func (this *TaxRepository) ListVehicleTax(vehicleCategoryId *int64, endingBefore
 								SELECT
 								a.*,
 								LEAD(a.id) OVER(ORDER BY a.id DESC) prev,
-								FIRST_VALUE(a.id) OVER(ORDER BY a.id DESC) ""next""
-							FROM public.vehicle_tax a`)
+								FIRST_VALUE(a.id) OVER(ORDER BY a.id DESC) "next"
+							FROM public.vehicle_tax a `)
 		if vehicleCategoryId != nil {
-			query.WriteString("LEFT JOIN public.vehicle_type b ON b.id = a.vehicle_type_id")
+			query.WriteString("LEFT JOIN public.vehicle_type b ON b.id = a.vehicle_type_id ")
 		}
-		query.WriteString(`WHERE a.id > @StartingAfter`)
+		query.WriteString(`WHERE a.id > @StartingAfter `)
 		if vehicleCategoryId != nil {
-			query.WriteString("AND b.vehicle_category_id = @vehicleCategoryId")
+			query.WriteString("AND b.vehicle_category_id = @vehicleCategoryId ")
 		}
-		query.WriteString(`ORDER BY a.id desc` + appendLimit(limit) + `) list ORDER BY id desc`)
+		query.WriteString(`ORDER BY a.id desc` + appendLimit(limit) + `) list ORDER BY id desc `)
 	} else {
 		query.WriteString(`SELECT
 							a.*,
 							LEAD(a.id) OVER(ORDER BY a.id DESC) prev,
-							null ""next""
-							FROM public.vehicle_tax a`)
+							null "next"
+							FROM public.vehicle_tax a `)
 		if vehicleCategoryId != nil {
-			query.WriteString("LEFT JOIN public.vehicle_type b ON b.id = a.vehicle_type_id")
-			query.WriteString("AND b.vehicle_category_id = @vehicleCategoryId")
+			query.WriteString("LEFT JOIN public.vehicle_type b ON b.id = a.vehicle_type_id ")
+			query.WriteString("AND b.vehicle_category_id = @vehicleCategoryId ")
 		}
-		query.WriteString(`ORDER BY a.id desc ` + appendLimit(limit))
+		query.WriteString(`ORDER BY a.id desc ` + appendLimit(limit) + ";")
 	}
 
 	err := this.repo.Raw(query.String(), map[string]interface{}{"vehicleCategoryId": vehicleCategoryId, "startingAfter": startingAfter, "endingBefore": endingBefore, "limit": limit}).Scan(&result).Error
@@ -200,47 +201,48 @@ func (this *TaxRepository) ListVehicleTaxSearchAndSort(searchBy map[string]any, 
 	}
 
 	for k, v := range searchBy {
+		fmt.Println("HERE: ", k)
 		if strings.ToLower(k) == "importduty" {
-			search.WriteString(fmt.Sprint("AND a.import_duty = %v", v))
+			search.WriteString(fmt.Sprint("AND a.import_duty = %v ", v))
 		}
 		if strings.ToLower(k) == "vat" {
-			search.WriteString(fmt.Sprint("AND a.vat = %v", v))
+			search.WriteString(fmt.Sprint("AND a.vat = %v ", v))
 		}
 		if strings.ToLower(k) == "nhil" {
-			search.WriteString(fmt.Sprint("AND a.nhil = %v", v))
+			search.WriteString(fmt.Sprint("AND a.nhil = %v ", v))
 		}
 		if strings.ToLower(k) == "getfundlevy" {
-			search.WriteString(fmt.Sprint("AND a.getfund_levy = %v", v))
+			search.WriteString(fmt.Sprint("AND a.getfund_levy = %v ", v))
 		}
 		if strings.ToLower(k) == "aulevy" {
-			search.WriteString(fmt.Sprint("AND a.au_levy = %v", v))
+			search.WriteString(fmt.Sprint("AND a.au_levy = %v ", v))
 		}
 		if strings.ToLower(k) == "ecowaslevy" {
-			search.WriteString(fmt.Sprint("AND a.ecowas_levy = %v", v))
+			search.WriteString(fmt.Sprint("AND a.ecowas_levy = %v ", v))
 		}
 		if strings.ToLower(k) == "eximlevy" {
-			search.WriteString(fmt.Sprint("AND a.exim_levy = %v", v))
+			search.WriteString(fmt.Sprint("AND a.exim_levy = %v ", v))
 		}
 		if strings.ToLower(k) == "examlevy" {
-			search.WriteString(fmt.Sprint("AND a.exam_levy = %v", v))
+			search.WriteString(fmt.Sprint("AND a.exam_levy = %v ", v))
 		}
 		if strings.ToLower(k) == "processingfee" {
-			search.WriteString(fmt.Sprint("AND a.processing_fee = %v", v))
+			search.WriteString(fmt.Sprint("AND a.processing_fee = %v ", v))
 		}
 		if strings.ToLower(k) == "specialimportlevy" {
-			search.WriteString(fmt.Sprint("AND a.special_import_levy = %v", v))
+			search.WriteString(fmt.Sprint("AND a.special_import_levy = %v ", v))
 		}
 		if strings.ToLower(k) == "categoryname" {
-			search.WriteString(fmt.Sprint("AND LOWER(c.short_name) LIKE '%"+"%v", v) + "%'")
+			search.WriteString("AND LOWER(c.short_name) LIKE '%" + fmt.Sprint(v) + "%' ")
 		}
 		if strings.ToLower(k) == "typename" {
-			search.WriteString(fmt.Sprint("AND LOWER(b.short_name) LIKE '%"+"%v", v) + "%'")
+			search.WriteString("AND LOWER(b.short_name) LIKE '%" + fmt.Sprint(v) + "%' ")
 		}
 		if strings.ToLower(k) == "categoryname" {
-			search.WriteString(fmt.Sprint("AND LOWER(b.short_name) LIKE '%"+"%v", v) + "%'")
+			search.WriteString("AND LOWER(c.short_name) LIKE '%" + fmt.Sprint(v) + "%' ")
 		}
 		if strings.ToLower(k) == "typedescription" {
-			search.WriteString(fmt.Sprint("AND LOWER(b.description) LIKE '%"+"%v", v) + "%'")
+			search.WriteString("AND LOWER(b.description) LIKE '%" + fmt.Sprint(v) + "%' ")
 		}
 	}
 
@@ -250,7 +252,7 @@ func (this *TaxRepository) ListVehicleTaxSearchAndSort(searchBy map[string]any, 
 				FROM public.vehicle_tax a
 				LEFT JOIN public.vehicle_type b ON b.id = a.vehicle_type_id
 				LEFT JOIN public.vehicle_category c ON c.id = b.vehicle_category_id
-				WHERE a.id <> 0` +
+				WHERE a.id <> 0 ` +
 		search.String() +
 		`ORDER BY ` + sort
 
@@ -273,12 +275,12 @@ func (this *TaxRepository) FetchVehicleTaxByTypeId(vehicleTypeId int64) (*models
 				FROM public.vehicle_tax a
 				LEFT JOIN public.vehicle_type b ON b.id = a.vehicle_type_id
 				LEFT JOIN public.vehicle_category c ON c.id = b.vehicle_category_id
-				WHERE b.id = @vehicleTypeId;`
-	err := this.repo.Raw(command, sql.Named("VehicleTypeId", vehicleTypeId)).Scan(&app).Error
+				WHERE b.id = @vehicleTypeId ;`
+	err := this.repo.Raw(command, sql.Named("vehicleTypeId", vehicleTypeId)).Scan(&app).Error
 	if err != nil {
-		this.logger.Println("failed to add new project")
+		this.logger.Println("failed to fetch tax information")
 		this.logger.Println(err)
-		return nil, errors.New("failed to add new project")
+		return nil, errors.New("failed to fetch tax information")
 	}
 	this.logger.Println("Successfully fetched application")
 	return &app, nil
