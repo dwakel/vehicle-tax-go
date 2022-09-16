@@ -11,6 +11,7 @@ ACT 891 CUSTOMS ACT, 2015
 
 
 #### 🚀 How To Test
+Find attached postman collections name Vehicle Import Duty.postman_collection.json
 Extract zip into Default bash directory.
 In a separate terminal window (2 terminals) RUN the following commads:
 

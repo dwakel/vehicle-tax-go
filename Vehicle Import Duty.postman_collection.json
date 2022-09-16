@@ -1,0 +1,181 @@
+{
+	"info": {
+		"_postman_id": "47403085-3fa2-47cd-97d1-e8696d9c1fb0",
+		"name": "Vehicle Tracking",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21297087"
+	},
+	"item": [
+		{
+			"name": "List Vehicle Categories",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8086/VehicleCategories?limit=10",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8086",
+					"path": [
+						"VehicleCategories"
+					],
+					"query": [
+						{
+							"key": "endingBefore",
+							"value": null,
+							"disabled": true
+						},
+						{
+							"key": "startingAfter",
+							"value": null,
+							"disabled": true
+						},
+						{
+							"key": "limit",
+							"value": "10"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List Vehicle Types",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8086/VehicleTypes?limit=10",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8086",
+					"path": [
+						"VehicleTypes"
+					],
+					"query": [
+						{
+							"key": "endingBefore",
+							"value": "",
+							"disabled": true
+						},
+						{
+							"key": "startingAfter",
+							"value": "",
+							"disabled": true
+						},
+						{
+							"key": "limit",
+							"value": "10"
+						},
+						{
+							"key": "categoryId",
+							"value": null,
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List Vehicle Tax Information",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8086/TaxInformation?limit=10",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8086",
+					"path": [
+						"TaxInformation"
+					],
+					"query": [
+						{
+							"key": "endingBefore",
+							"value": "",
+							"disabled": true
+						},
+						{
+							"key": "startingAfter",
+							"value": "",
+							"disabled": true
+						},
+						{
+							"key": "limit",
+							"value": "10"
+						},
+						{
+							"key": "categoryId",
+							"value": null,
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List Vehicle Tax Search and Sort",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"searchBy\": {\n    },\n    \"sortKey\": \"\",\n    \"sortOrder\": \"\",\n    \"page\": 1,\n    \"perPage\": 5\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8086/TaxInformation/SearchSort",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8086",
+					"path": [
+						"TaxInformation",
+						"SearchSort"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Calculate Duty",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8086/VehicleType/1120/Duty?costImportFreight=10000",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8086",
+					"path": [
+						"VehicleType",
+						"1120",
+						"Duty"
+					],
+					"query": [
+						{
+							"key": "costImportFreight",
+							"value": "10000"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
