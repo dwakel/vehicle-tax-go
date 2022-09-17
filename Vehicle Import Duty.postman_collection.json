@@ -12,7 +12,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8086/VehicleCategories?limit=10",
+					"raw": "http://localhost:8086/VehicleCategories?limit=1",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -34,7 +34,7 @@
 						},
 						{
 							"key": "limit",
-							"value": "10"
+							"value": "1"
 						}
 					]
 				}
@@ -45,9 +45,15 @@
 			"name": "List Vehicle Types",
 			"request": {
 				"method": "GET",
-				"header": [],
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
 				"url": {
-					"raw": "http://localhost:8086/VehicleTypes?limit=10",
+					"raw": "http://localhost:8086/VehicleTypes?limit=5&categoryId=1003",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -69,12 +75,11 @@
 						},
 						{
 							"key": "limit",
-							"value": "10"
+							"value": "5"
 						},
 						{
 							"key": "categoryId",
-							"value": null,
-							"disabled": true
+							"value": "1003"
 						}
 					]
 				}
@@ -128,7 +133,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"searchBy\": {\n    },\n    \"sortKey\": \"\",\n    \"sortOrder\": \"\",\n    \"page\": 1,\n    \"perPage\": 5\n}",
+					"raw": "{\n    \"searchBy\": {\n    },\n    \"sortKey\": \"vehicleTypeId\",\n    \"sortOrder\": \"desc\",\n    \"page\": 1,\n    \"perPage\": 40\n}",
 					"options": {
 						"raw": {
 							"language": "json"
